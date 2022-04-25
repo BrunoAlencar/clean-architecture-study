@@ -1,49 +1,50 @@
 // @ts-nocheck
 
-export function validate(str) {
-  if (str !== null) {
-    if (str !== undefined) {
-      if (str.length >= 11 && str.length <= 14) {
-        str = str
-          .replace('.', '')
-          .replace('.', '')
-          .replace('-', '')
-          .replace(' ', '');
+export function isValidCPF(cpf) {
+  const MIN_LENGTH_CPF = 11;
+  const MAX_LENGTH_CPF = 14;
 
-        if (!str.split('').every((c) => c === str[0])) {
-          let d1, d2;
-          let dg1, dg2, rest;
-          let digito;
-          let nDigResult;
-          d1 = d2 = 0;
-          dg1 = dg2 = rest = 0;
+  const isValidStringCPF =
+    cpf && cpf.length >= MIN_LENGTH_CPF && cpf.length <= MAX_LENGTH_CPF;
+  if (!isValidStringCPF) {
+    return false;
+  }
+  cpf = cpf.replace('.', '').replace('.', '').replace('-', '').replace(' ', '');
+  const isEveryCharacterRepeated = cpf.split('').every((c) => c === cpf[0]);
+  if (isEveryCharacterRepeated) {
+    return false;
+  }
+  let firstDigitCalculation, secondDigitCalculation;
+  let firstDigitResult, secondDigitResult, rest;
 
-          for (let nCount = 1; nCount < str.length - 1; nCount++) {
-            if (isNaN(parseInt(str.substring(nCount - 1, nCount)))) {
-              return false;
-            }
-            digito = parseInt(str.substring(nCount - 1, nCount));
-            d1 = d1 + (11 - nCount) * digito;
+  firstDigitCalculation =
+    secondDigitCalculation =
+    firstDigitResult =
+    secondDigitResult =
+    rest =
+      0;
 
-            d2 = d2 + (12 - nCount) * digito;
-          }
-
-          rest = d1 % 11;
-
-          dg1 = rest < 2 ? (dg1 = 0) : 11 - rest;
-          d2 += 2 * dg1;
-          rest = d2 % 11;
-          if (rest < 2) dg2 = 0;
-          else dg2 = 11 - rest;
-
-          let nDigVerific = str.substring(str.length - 2, str.length);
-          nDigResult = '' + dg1 + '' + dg2;
-          return nDigVerific == nDigResult;
-        }
-        return false;
-      }
+  for (let nCount = 1; nCount < cpf.length - 1; nCount++) {
+    if (isNaN(parseInt(cpf.substring(nCount - 1, nCount)))) {
       return false;
     }
+
+    const currentDigit = parseInt(cpf.substring(nCount - 1, nCount));
+    firstDigitCalculation =
+      firstDigitCalculation + (11 - nCount) * currentDigit;
+
+    secondDigitCalculation =
+      secondDigitCalculation + (12 - nCount) * currentDigit;
   }
-  return false;
+
+  rest = firstDigitCalculation % 11;
+
+  firstDigitResult = rest < 2 ? 0 : 11 - rest;
+  secondDigitCalculation += 2 * firstDigitResult;
+  rest = secondDigitCalculation % 11;
+  secondDigitResult = rest < 2 ? 0 : 11 - rest;
+
+  const lastTwoDigits = cpf.substring(cpf.length - 2, cpf.length);
+  const lastTwoDigitsCalculated = `${firstDigitResult}${secondDigitResult}`;
+  return lastTwoDigits == lastTwoDigitsCalculated;
 }
