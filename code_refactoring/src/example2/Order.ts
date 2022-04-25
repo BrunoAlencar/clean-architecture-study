@@ -27,7 +27,7 @@ export class Order {
       return totalValue;
     }
 
-    const valueToDiscount = this.orderDiscount?.getDiscount(totalValue);
+    const valueToDiscount = this.orderDiscount.getDiscount(totalValue);
 
     return totalValue - valueToDiscount;
   }

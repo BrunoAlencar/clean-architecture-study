@@ -4,6 +4,7 @@ import { ProductItem } from '../../src/example2/ProductItem';
 
 let productItems: ProductItem[];
 let order: Order;
+let userCPF: string;
 beforeEach(() => {
   const productName = 'cheese';
   const productDescription = 'Milk derivative';
@@ -15,7 +16,7 @@ beforeEach(() => {
     productPrice,
     productQuantity
   );
-  const userCPF = '123.456.789-09';
+  userCPF = '123.456.789-09';
   productItems = [productItem];
   order = new Order(userCPF, productItems);
 });
@@ -26,7 +27,8 @@ test('should create an order', () => {
 });
 
 test('should create an order with 3 items(with description, price and quantity)', () => {
-  order.addProductItems([productItems[0], productItems[0]]);
+  order.addProductItem(productItems[0]);
+  order.addProductItems([productItems[0]]);
   expect(order.productItems.length).toBe(3);
   expect(order.productItems).toEqual([
     expect.objectContaining({
@@ -54,8 +56,19 @@ test('should create an order with a coupon of discount of percentage', () => {
   const percentageOfDiscount = 10;
   const couponOrderDiscount = new CouponOrderDiscount(percentageOfDiscount);
   order.setOrderDiscount(couponOrderDiscount);
-  console.log(order);
 
   expect(order.getTotalValue()).toBe(100);
   expect(order.getFinalValueAfterDiscount()).toBe(90);
+});
+
+test('should create an order and get valueAfterDiscountWithout any discount', () => {
+  expect(order.getTotalValue()).toBe(100);
+  expect(order.getFinalValueAfterDiscount()).toBe(100);
+});
+
+test('should return throw error when trying to create a order with invalid cpf', () => {
+  userCPF = '111.111.111.-11';
+  expect(() => new Order(userCPF, productItems)).toThrow(
+    new Error('Order CPF is not valid')
+  );
 });
